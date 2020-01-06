@@ -263,7 +263,7 @@ export class CompanyDetailSection extends Component {
                         <p>Phone: {phone}</p>
                         <p> Location: {location.city}, {location.country}</p>
                     </React.Fragment>
-                    <button type="button" className="ui right floated teal button" onClick={this.openEdit}>Edit</button>
+                    <button type="button" className="ui right floated teal button">Edit</button>
                 </div>
             </div>
         )
