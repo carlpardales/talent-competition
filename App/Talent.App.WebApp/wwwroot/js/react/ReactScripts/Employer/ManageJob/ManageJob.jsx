@@ -91,7 +91,11 @@ export default class ManageJob extends React.Component {
             '&showClosed=' + showClosed + '&showDraft=' + showDraft + '&showExpired=' + showExpired +
             '&showUnexpired=' + showUnexpired;
 
-        var link = 'http://localhost:51689/listing/listing/getSortedEmployerJobs';
+        // Changed to Azure address for review purposes.
+        // Must revert to local url during development.
+        //var link = 'http://localhost:51689/listing/listing/getSortedEmployerJobs';
+
+        var link = 'https://competitiontalentservicestalent.azurewebsites.net/listing/listing/getSortedEmployerJobs';
         var cookies = Cookies.get('talentAuthToken');
 
         $.ajax({

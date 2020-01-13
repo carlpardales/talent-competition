@@ -88,8 +88,10 @@ export default class LoginForm extends React.Component {
             password: this.state.password
         }
 
+        // Changed to Azure address for review purposes.
+        // Must revert to local url during development. url: 'http://localhost:60998/authentication/authentication/signin'
         $.ajax({
-            url: 'http://localhost:60998/authentication/authentication/signin',
+            url: 'https://competitiontalentservicesidentity.azurewebsites.net/authentication/authentication/signin',
             type: 'POST',
             data: JSON.stringify(loginModel),
             contentType: 'application/json',
