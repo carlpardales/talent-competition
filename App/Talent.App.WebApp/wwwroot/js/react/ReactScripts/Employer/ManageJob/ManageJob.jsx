@@ -6,19 +6,11 @@ import { LoggedInNavigation } from '../../Layout/LoggedInNavigation.jsx';
 import { JobSummaryCard } from './JobSummaryCard.jsx';
 import { BodyWrapper, loaderData } from '../../Layout/BodyWrapper.jsx';
 import { Pagination, Icon, Dropdown, Checkbox, Accordion, Form, Segment } from 'semantic-ui-react';
-
-const filterOptions = [
-    { key: '0', value: 'Choose Filter', text: 'Choose Filter' },
-    { key: '1', value: 'Active', text: 'Active' },
-    { key: '2', value: 'Closed', text: 'Closed' },
-    { key: '3', value: 'Draft', text: 'Draft' },
-    { key: '4', value: 'Expired', text: 'Expired' },
-    { key: '5', value: 'Unexpired', text: 'Unexpired' }
-];
+import { JobFilter } from './JobFilter.jsx';
 
 const sortByDate = [
-    { key: '0', value: 'Newest first', text: 'Newest first' },
-    { key: '1', value: 'Oldest first', text: 'Oldest first' }
+    { key: '0', value: 'desc', text: 'Newest first' },
+    { key: '1', value: 'asc', text: 'Oldest first' }
 ];
 
 export default class ManageJob extends React.Component {
@@ -50,8 +42,10 @@ export default class ManageJob extends React.Component {
         this.loadData = this.loadData.bind(this);
         this.init = this.init.bind(this);
         this.loadNewData = this.loadNewData.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleFilter = this.handleFilter.bind(this);
+        this.handleSortChange = this.handleSortChange.bind(this);
         this.handlePageChange = this.handlePageChange.bind(this);
+        this.renderJobs = this.renderJobs.bind(this);
     };
 
     init() {
@@ -69,9 +63,18 @@ export default class ManageJob extends React.Component {
         this.init();
     };
 
-    handleChange(event, data) {
-        //Add dropdown selection handling here
-        console.log('Unhandled dropdown');
+    handleFilter(newFilter) {
+        var data = {
+            filter: newFilter,
+            activePage: 1
+        }
+        console.log(data);
+        this.loadNewData(data);
+    }
+
+    handleSortChange(event, { value, name }) {
+        this.state.sortBy[name] = value;
+        this.loadNewData({ sortBy: this.state.sortBy });
     }
 
     handlePageChange(event, { activePage }) {
@@ -138,8 +141,31 @@ export default class ManageJob extends React.Component {
         });
     }
 
-    render() {
+    renderJobs() {
         const jobs = this.state.loadJobs;
+
+        const result = (jobs.length > 0) ?
+            jobs.map(job =>
+                <JobSummaryCard
+                    key={job.id}
+                    id={job.id}
+                    title={job.title}
+                    noOfSuggestions={job.noOfSuggestions}
+                    location={`${job.location.city}, ${job.location.country}`}
+                    summary={job.summary}
+                    expiryDate={job.expiryDate} />)
+            : <p style={{
+                paddingTop: 20,
+                paddingBottom: 50,
+                marginLeft: 15
+            }}>
+                No Jobs Found
+             </p>
+
+        return result;
+    }
+
+    render() {
         return (
             <BodyWrapper reload={this.init} loaderData={this.state.loaderData}>
                 <div className="ui container">
@@ -147,36 +173,23 @@ export default class ManageJob extends React.Component {
                         <h2 className="ui header">List of Jobs</h2>
                         <div className="row">
                             <div className="padded column">
-                                <i aria-hidden="true" className="filter icon"></i>
-                                Filter:{' '}
-                                <Dropdown
-                                    inline
-                                    options={filterOptions}
-                                    defaultValue={filterOptions[0].value}
-                                />
+                                <JobFilter filter={this.state.filter} handleFilter={this.handleFilter} />
                                 <i aria-hidden="true" className="calendar icon"></i>
-                                Sort by date:{' '}
+                                {"Sort by date: "}
                                 <Dropdown
+                                    name="date"
                                     inline
+                                    simple
                                     options={sortByDate}
-                                    defaultValue={sortByDate[0].value}
-                                    onChange={this.handleChange}
+                                    value={this.state.sortBy.date}
+                                    onChange={this.handleSortChange}
                                 />
                             </div>
                         </div>
                         <div className="row">
                             <div className="column">
                                 <div className="ui three cards">
-                                    {jobs.map(job =>
-                                        <JobSummaryCard
-                                            key={job.id}
-                                            id={job.id}
-                                            title={job.title}
-                                            noOfSuggestions={job.noOfSuggestions}
-                                            location={`${job.location.city}, ${job.location.country}`}
-                                            summary={job.summary}
-                                            expiryDate={job.expiryDate} />
-                                    )}
+                                    {this.renderJobs()}
                                 </div>
                             </div>
                         </div>
@@ -187,6 +200,8 @@ export default class ManageJob extends React.Component {
                                     totalPages={this.state.totalPages}
                                     onPageChange={this.handlePageChange} />
                             </div>
+                        </div>
+                        <div className="row">
                         </div>
                     </div>
                 </div>

@@ -8,7 +8,6 @@ export class JobSummaryCard extends React.Component {
         super(props);
         this.handleClick = this.handleClick.bind(this);
         this.selectJob = this.selectJob.bind(this)
-        this.renderExpiredLabel = this.renderExpiredLabel.bind(this);
     }
 
     handleClick(event) {
@@ -44,13 +43,6 @@ export class JobSummaryCard extends React.Component {
         })
     }
 
-    renderExpiredLabel(expiryDate) {
-        // Need to add condition to check if job is expired before rendering the label.
-        return (
-            <div className="ui small red label">Expired</div>
-        );
-    }
-
     render() {
         const editJobPath = `/EditJob/${this.props.id}`;
         const copyJobPath = `/PostJob/${this.props.id}`;
@@ -69,7 +61,11 @@ export class JobSummaryCard extends React.Component {
                     </div>
                 </div>
                 <div className="extra content">
-                    {this.renderExpiredLabel(this.props.expiryDate)}
+                    {   // render Expired tag
+                        moment(this.props.expiryDate) < moment() ?
+                            <div className="ui small red label">Expired</div>
+                            : null
+                    }
                     <div className="ui compact mini right floated buttons">
                         <button className="ui blue basic button" onClick={this.handleClick}>
                             <i aria-hidden="true" className="ban icon"></i>
